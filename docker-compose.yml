@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  emulator1:
+    image: butomo1989/docker-android-x86-7.1.1:1.6-p2
+    privileged: true
+    container_name: android-emulator-1
+    ports:
+      - "5555:5555"
+      - "6080:6080" # noVNC (не используем, но пусть будет)
+    environment:
+      - DEVICE=Nexus 5
+      - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 768 -cores 1
+      - DATAPARTITION=512m
+      - AUTO_START=true
+      - APPIUM=true
+    shm_size: "512m"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1.2G
+  # emulator2:
+  #   image: butomo1989/docker-android-x86-7.1.1:1.6-p2
+  #   privileged: true
+  #   container_name: android-emulator-2
+  #   ports:
+  #     - "5556:5555"
+  #     - "6081:6080"
+  #   environment:
+  #     - DEVICE=Nexus 5
+  #     - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 768 -cores 1
+  #     - DATAPARTITION=512m
+  #     - AUTO_START=true
+  #     - APPIUM=true
+  #   shm_size: "512m"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"
+  #         memory: 1.2G
+
+  # emulator3:
+  #   image: butomo1989/docker-android-x86-7.1.1:1.6-p2
+  #   privileged: true
+  #   container_name: android-emulator-3
+  #   ports:
+  #     - "5557:5555"
+  #     - "6082:6080"
+  #   environment:
+  #     - DEVICE=Nexus 5
+  #     - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 768 -cores 1
+  #     - DATAPARTITION=512m
+  #     - AUTO_START=true
+  #     - APPIUM=true
+  #   shm_size: "512m"
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: "1.0"
+  #         memory: 1.2G
