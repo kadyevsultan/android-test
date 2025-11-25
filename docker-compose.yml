@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   emulator1:
-    image: freeway/android:32.0.0-arm64
+    image: evgeniymish/android:1.10.0
     privileged: true
     container_name: emulator1
     ports:
@@ -22,7 +22,7 @@ services:
           memory: 4G
 
   emulator2:
-    image: freeway/android:32.0.0-arm64
+    image: evgeniymish/android:1.10.0
     privileged: true
     container_name: emulator2
     ports:
@@ -42,7 +42,7 @@ services:
           memory: 4G
 
   emulator3:
-    image: freeway/android:32.0.0-arm64
+    image: evgeniymish/android:1.10.0
     privileged: true
     container_name: emulator3
     ports:
