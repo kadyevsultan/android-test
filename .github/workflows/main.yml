@@ -1,4 +1,4 @@
-name: Check Android Emulator
+name: Android 3-Emulator Check
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  check-emulator:
+  check-emulators:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Устанавливаем Docker (buildx для современных действий, можно пропустить, если не строим образы)
+      # 2. Устанавливаем Docker
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
@@ -25,34 +25,48 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y android-tools-adb
 
-      # 4. Запускаем контейнер эмулятора
-      - name: Start emulator1
-        run: docker compose up -d emulator1
+      # 4. Запускаем 3 эмулятора
+      - name: Start 3 emulators
+        run: docker compose up -d emulator1 emulator2 emulator3
 
-      # 5. Ждём, пока эмулятор станет доступен через adb
-      - name: Wait for emulator
+      # 5. Ждём, пока все эмуляторы станут доступными через adb
+      - name: Wait for emulators
         run: |
-          timeout=120
-          until docker exec emulator1 adb devices | grep emulator; do
-            sleep 5
-            timeout=$((timeout-5))
-            if [ $timeout -le 0 ]; then
-              echo "Emulator failed to start"
+          EMULATORS=("5555" "5556" "5557")
+          for PORT in "${EMULATORS[@]}"; do
+            echo "Waiting for emulator on port $PORT..."
+            timeout=120
+            until adb connect localhost:$PORT | grep -q "connected"; do
+              sleep 5
+              timeout=$((timeout-5))
+              if [ $timeout -le 0 ]; then
+                echo "Emulator on port $PORT failed to start"
+                exit 1
+              fi
+            done
+            echo "Emulator on port $PORT is running ✅"
+          done
+
+      # 6. Проверяем статус контейнеров
+      - name: Verify containers
+        run: |
+          for NAME in emulator1 emulator2 emulator3; do
+            if ! docker ps --filter "name=$NAME" --filter "status=running" | grep -q $NAME; then
+              echo "$NAME container is not running!"
               exit 1
+            else
+              echo "$NAME container is running ✅"
             fi
           done
-          echo "Emulator is running ✅"
 
-      # 6. Проверяем, что контейнер запущен
-      - name: Verify emulator1 container
+      # 7. Проверка базовой производительности (CPU/RAM) каждого эмулятора
+      - name: Check emulators performance
         run: |
-          if ! docker ps --filter "name=emulator1" --filter "status=running" | grep -q emulator1; then
-            echo "emulator1 container failed to start!"
-            exit 1
-          else
-            echo "emulator1 container is running ✅"
-          fi
+          for NAME in emulator1 emulator2 emulator3; do
+            echo "=== Performance for $NAME ==="
+            docker stats --no-stream $NAME
+          done
 
-      # 7. Опционально: остановить контейнер после проверки
+      # 8. Очистка после теста
       - name: Tear down
         run: docker compose down
