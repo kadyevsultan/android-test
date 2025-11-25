@@ -15,24 +15,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Устанавливаем Docker (buildx для современных действий)
+      # 2. Устанавливаем Docker (buildx для современных действий, можно пропустить, если не строим образы)
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      # 3. Запускаем контейнер эмулятора
+      # 3. Устанавливаем adb
+      - name: Install ADB
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y android-tools-adb
+
+      # 4. Запускаем контейнер эмулятора
       - name: Start emulator1
         run: docker compose up -d emulator1
 
-      # 4. Проверяем, что контейнер запущен
-      - name: Verify emulator1 is running
+      # 5. Ждём, пока эмулятор станет доступен через adb
+      - name: Wait for emulator
+        run: |
+          timeout=120
+          until docker exec emulator1 adb devices | grep emulator; do
+            sleep 5
+            timeout=$((timeout-5))
+            if [ $timeout -le 0 ]; then
+              echo "Emulator failed to start"
+              exit 1
+            fi
+          done
+          echo "Emulator is running ✅"
+
+      # 6. Проверяем, что контейнер запущен
+      - name: Verify emulator1 container
         run: |
           if ! docker ps --filter "name=emulator1" --filter "status=running" | grep -q emulator1; then
-            echo "emulator1 failed to start!"
+            echo "emulator1 container failed to start!"
             exit 1
           else
-            echo "emulator1 is running ✅"
+            echo "emulator1 container is running ✅"
           fi
 
-      # 5. Опционально: остановить контейнер после проверки
+      # 7. Опционально: остановить контейнер после проверки
       - name: Tear down
         run: docker compose down
