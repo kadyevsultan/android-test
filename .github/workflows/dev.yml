@@ -1,0 +1,54 @@
+name: Android Emulators - Dev
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  test-emulators:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Устанавливаем Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # 3. Поднимаем эмуляторы
+      - name: Start Android emulators
+        run: docker compose up -d
+
+      # 4. Ждем, пока эмуляторы прогреются (~30 секунд)
+      - name: Wait for emulators to boot
+        run: sleep 30
+
+      # 5. Проверяем, что все эмуляторы запущены
+      - name: Verify emulators running
+        run: |
+          for NAME in emulator1 emulator2 emulator3; do
+            if ! docker ps --filter "name=$NAME" --filter "status=running" | grep -q "$NAME"; then
+              echo "$NAME failed to start!"
+              docker logs $NAME || true
+              exit 1
+            else
+              echo "$NAME is running ✅"
+            fi
+          done
+
+      # 6. Опциональная проверка производительности
+      - name: Print container stats
+        run: |
+          for NAME in emulator1 emulator2 emulator3; do
+            echo "=== Performance for $NAME ==="
+            docker stats $NAME --no-stream
+          done
+
+      # 7. Останавливаем контейнеры после проверки
+      - name: Tear down emulators
+        run: docker compose down
