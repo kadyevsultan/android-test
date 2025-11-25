@@ -26,7 +26,7 @@ jobs:
 
       # 4. Ждем, пока эмуляторы прогреются (~30 секунд)
       - name: Wait for emulators to boot
-        run: sleep 30
+        run: sleep 120
 
       # 5. Проверяем, что все эмуляторы запущены
       - name: Verify emulators running
