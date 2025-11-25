@@ -10,16 +10,16 @@ services:
       - "6080:6080"
     environment:
       - DEVICE=Nexus 5
-      - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 768 -cores 1
-      - DATAPARTITION=512m
+      - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 4096 -cores 1
+      - DATAPARTITION=1024m
       - AUTO_START=true
       - APPIUM=true
-    shm_size: "512m"
+    shm_size: "1G"
     deploy:
       resources:
         limits:
           cpus: "1.0"
-          memory: 1.2G
+          memory: 4G
 
   emulator2:
     image: shmayro/dockerify-android:19-11-25
@@ -30,16 +30,16 @@ services:
       - "6081:6080"
     environment:
       - DEVICE=Nexus 5
-      - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 768 -cores 1
-      - DATAPARTITION=512m
+      - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 4096 -cores 1
+      - DATAPARTITION=1024m
       - AUTO_START=true
       - APPIUM=true
-    shm_size: "512m"
+    shm_size: "1G"
     deploy:
       resources:
         limits:
           cpus: "1.0"
-          memory: 1.2G
+          memory: 4G
 
   emulator3:
     image: shmayro/dockerify-android:19-11-25
@@ -50,13 +50,13 @@ services:
       - "6082:6080"
     environment:
       - DEVICE=Nexus 5
-      - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 768 -cores 1
-      - DATAPARTITION=512m
+      - EMULATOR_ARGS=-no-window -no-audio -no-snapshot-load -no-snapshot-save -wipe-data -memory 4096 -cores 1
+      - DATAPARTITION=1024m
       - AUTO_START=true
       - APPIUM=true
-    shm_size: "512m"
+    shm_size: "1G"
     deploy:
       resources:
         limits:
           cpus: "1.0"
-          memory: 1.2G
+          memory: 4G
